@@ -3,19 +3,29 @@ const User = require("../models/user-model");
 
 const getAllUser = asyncHandler(async (req, res) => {
   const users = await User.find();
-  res.status(200).json({ message: "Obter todos os Usuarios", data: users });
+
+  const usData = users.map(user =>{
+    return {
+        id: user._id,
+        email: user.email
+    }
+  })
+  
+  res.status(200).json({data:usData});
 });
 
 const getUser = asyncHandler ( async(req, res) => {
 
     const user = await User.findById(req.params.id)
 
+    const {_id,email} = user
+
+
     if(!user){
       res.status(404).json({message:"Usuario não encontrado"});
     }
 
-  res.status(200).json({message: `Obter Usuario ${user}`,
-  });
+    res.status(200).json({_id,email});
 });
 
 
@@ -68,14 +78,20 @@ const signup = asyncHandler(async (req, res) => {
         try{
 
             const userExist = await User.findOne({email}); 
+            const {password,name} = userExist
 
             if(!userExist){
 
                 return  res.status(404).json({"message": "O utilizador não foi encontrado!"});
              }
 
+
+             if(req.body.password != password){
+
+                return  res.status(401).json({ "message": "A password introduzida é inválida!"});
+             }
         
-             return  res.status(200).json({"message": "Utilizador encontrado!"});
+             return  res.status(200).json({message: `Bem vindo!,${name}`});
 
 
         }catch(err){
