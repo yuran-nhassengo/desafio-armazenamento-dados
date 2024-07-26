@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/user-model");
+const { default: mongoose } = require("mongoose");
 
 const getAllUser = asyncHandler(async (req, res) => {
   const users = await User.find();
@@ -14,19 +15,40 @@ const getAllUser = asyncHandler(async (req, res) => {
   res.status(200).json({data:usData});
 });
 
+
+
 const getUser = asyncHandler ( async(req, res) => {
 
-    const user = await User.findById(req.params.id)
-
-    const {_id,email} = user
+        
 
 
-    if(!user){
-      res.status(404).json({message:"Usuario não encontrado"});
-    }
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(404).json({ message: "Usuario não encontrado" });
+        }
 
-    res.status(200).json({_id,email});
-});
+        const user = await User.findById(req.params.id)
+        
+
+        try{
+            if(!user){
+
+                res.status(404).json({message:"Usuario não encontrado"});
+          
+                }
+            
+               
+
+                const {_id,email} = user
+            
+                res.status(200).json({_id,email});
+
+        }catch(err){
+            res.status(400).json({err: "Internal Server error."});
+        }
+
+
+    
+    });
 
 
 const signup = asyncHandler(async (req, res) => {
