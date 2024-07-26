@@ -12,6 +12,6 @@ router.get("/user/:id", getUser);
 
 router.post("/auth/signup", signup);
 
-router.post("/api/login",login);
+router.post("/auth/login",login);
 
 module.exports = router;
